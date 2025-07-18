@@ -1,38 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/18 14:13:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/18 20:17:39 by mklevero         ###   ########.fr       */
+/*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
+/*   Updated: 2025/07/18 20:21:04 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#include "pipex.h"
 
-# include "libft.h"
-# include <fcntl.h>
-# include <stdlib.h>
-# include <unistd.h>
-
-// error msg
-# define ERROR_ARG "Error: Incorrect number of arguments."
-# define ERROR_PIPE "Error: pipe() failed."
-
-typedef struct s_struct
+int	main(int ac, char **av, char **envp)
 {
-	int		ac;
-	char	**av;
+	int		pipe_fd[2];
+	pid_t	pid_1;
+	pid_t	pid_2;
 
-}			t_struct;
+	if (ac != 5)
+		exit_error(ERROR_ARG, NULL);
+	if (pipe(pipe_fd) == -1)
+		exit_error(ERROR_PIPE, NULL);
+}
 
-// main
-int			main(int ac, char **av, char **envp);
-
-// exit 
-void		exit_error(char *msg, t_struct *data);
-
-#endif
+void	exit_error(char *msg, t_struct *data)
+{
+	ft_putendl_fd(msg, STDERR_FILENO);
+	exit(EXIT_FAILURE);
+}
