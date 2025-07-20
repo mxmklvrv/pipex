@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/19 15:47:02 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/20 15:13:57 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,51 @@ void process_child_one(t_struct *data)
         }
         close(data->infile_fd);
         close(data->pipe_fd[WRITE_TO]);
+        process_cmd(data, data->av[2]);
     }
 }
+
+void    process_cmd(t_struct *data, char *av_cmd)
+{
+    char **dir; // needs to free
+    char **cmd; // needs to free
+    dir = NULL;
+    cmd = NULL;
+    dir = extract_directories(data->envp, data);
+    cmd = ft_split(av_cmd, ' ');
+    if(cmd == NULL)
+    {
+        free_sp(dir);
+        exit_error("CMD splitting failed", data);
+    }
+    
+    
+}
+
+char **extract_directories(char **envp, t_struct *data)
+{
+    int i;
+    char *path;
+    char **dir;
+
+    i = 0;
+    path = NULL;
+    dir = NULL;
+    while(envp[i])
+    {
+        if(ft_strncmp(envp[i], "PATH=", 5) == 0)
+            path = envp[i] + 5;
+        i++;
+    }
+    if(path == NULL)
+        return (NULL); // for now, not sure 
+    dir = ft_split(path, ':');
+    if(dir == NULL)
+        exit_error("Path splitting failed", data);
+    return (dir);
+}
+
+
 
 void process_child_two(t_struct *data)
 {
@@ -86,6 +129,7 @@ void process_child_two(t_struct *data)
         } 
         close(data->outfile_fd);
         close(data->pipe_fd[READ_FROM]);
+        process_cmd(data, data->av[4]);
     }
 }
 
