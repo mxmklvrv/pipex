@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 16:42:16 by mklevero          #+#    #+#             */
-/*   Updated: 2025/04/28 20:53:20 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/20 15:00:26 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static char	*sep_words(char const *s, char c)
 	return (sep);
 }
 
-static void	*free_sp(char **arr)
+void	*free_sp(char **arr)
 {
 	int	i;
 
