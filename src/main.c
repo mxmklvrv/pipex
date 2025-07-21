@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/21 19:10:22 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:19:43 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,17 +51,27 @@ void	process_child_one(t_struct *data)
 			exit_error("infile opening failed", NULL);
 		}
 		close(data->pipe_fd[READ_FROM]);
-		if (dup2(data->infile_fd, STDIN_FILENO) == -1
-			|| dup2(data->pipe_fd[WRITE_TO], STDOUT_FILENO) == -1)
-		{
-			close(data->infile_fd);
-			close(data->pipe_fd[WRITE_TO]);
-			exit_error("dup2 failed in chiled one", NULL);
-		}
-		close(data->infile_fd);
-		close(data->pipe_fd[WRITE_TO]);
+		redirect_fds(data->infile_fd, data->pipe_fd[WRITE_TO], data);
 		process_cmd(data, data->av[2]);
 	}
+}
+
+void redirect_fds(int in_fd, int out_fd, t_struct *data)
+{
+    if(dup2(in_fd, STDIN_FILENO) == -1)
+    {
+        close(in_fd);
+        close(out_fd);
+        exit_error("dup2 failed (stdin)", data);
+    }
+    if (dup2(out_fd, STDOUT_FILENO) == -1)
+    {
+        close(in_fd);
+        close(out_fd);
+        exit_error("dup2 failed (stdout)", data);
+    }
+    close(in_fd);
+    close(out_fd);
 }
 
 void	close_pipe_fds(t_struct *data)
@@ -82,7 +92,7 @@ void	process_cmd(t_struct *data, char *av_cmd)
 
 	dir = NULL;
 	cmd = NULL;
-	dir = extract_directories(data->envp, data); // might be NULL
+	dir = extract_directories(data->envp, data);
 	if (dir == NULL)
 		exit_error("split failed", data);
 	cmd = ft_split(av_cmd, ' ');
@@ -182,15 +192,7 @@ void	process_child_two(t_struct *data)
 			exit_error("outfile opening failed", NULL);
 		}
 		close(data->pipe_fd[WRITE_TO]);
-		if (dup2(data->pipe_fd[READ_FROM], STDIN_FILENO) == -1
-			|| dup2(data->outfile_fd, STDOUT_FILENO) == -1)
-		{
-			close(data->outfile_fd);
-			close(data->pipe_fd[READ_FROM]);
-			exit_error("dup2 failed in chiled two", NULL);
-		}
-		close(data->outfile_fd);
-		close(data->pipe_fd[READ_FROM]);
+		redirect_fds(data->pipe_fd[READ_FROM], data->outfile_fd, data);
 		process_cmd(data, data->av[3]);
 	}
 }
