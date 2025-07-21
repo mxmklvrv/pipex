@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/21 15:31:48 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/21 17:06:30 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 int	main(int ac, char **av, char **envp)
 {
 	t_struct	data;
+	int			status1;
+	int			status2;
 
 	if (ac != 5)
 		exit_error(ERR_ARG, NULL);
@@ -25,6 +27,12 @@ int	main(int ac, char **av, char **envp)
 	process_child_two(&data);
 	close(data.pipe_fd[WRITE_TO]);
 	close(data.pipe_fd[READ_FROM]);
+	waitpid(data.pid_one, &status1, 0);
+	waitpid(data.pid_two, &status2, 0);
+	if (WIFEXITED(status2))
+		exit(WEXITSTATUS(status2));
+	else
+		exit(EXIT_FAILURE);
 }
 
 void	process_child_one(t_struct *data)
@@ -66,10 +74,13 @@ void	process_cmd(t_struct *data, char *av_cmd)
 	dir = NULL;
 	cmd = NULL;
 	dir = extract_directories(data->envp, data); // might be NULL
+	if (dir == NULL)
+		exit_error("split failed", data);
 	cmd = ft_split(av_cmd, ' ');
-	if (cmd == NULL)
+	if (cmd == NULL || cmd[0] == NULL)
 	{
 		free_sp(dir);
+		free_sp(cmd);
 		exit_error("CMD splitting failed", data);
 	}
 	check_exec(dir, cmd, data);

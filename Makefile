@@ -6,12 +6,12 @@
 #    By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/18 14:24:11 by mklevero          #+#    #+#              #
-#    Updated: 2025/07/18 18:18:07 by mklevero         ###   ########.fr        #
+#    Updated: 2025/07/21 17:02:45 by mklevero         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
-CC = cc 
+CC = cc -g 
 CFLAGS = -Wall -Wextra -Werror
 
 LIBFT_DIR = ./libft

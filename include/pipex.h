@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 14:13:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/21 15:29:58 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/21 16:41:40 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 # include "libft.h"
 # include <fcntl.h>
 # include <stdlib.h>
+# include <sys/types.h>
+# include <sys/wait.h>
 # include <unistd.h>
 
 // error msg
@@ -32,7 +34,7 @@ typedef struct s_struct
 {
 	int		ac;
 	char	**av;
-	char	*envp;
+	char	**envp;
 	int		pipe_fd[2];
 	pid_t	pid_one;
 	pid_t	pid_two;
