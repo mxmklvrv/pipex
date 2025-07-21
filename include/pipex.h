@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 14:13:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/19 15:48:24 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/21 15:29:58 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,28 +32,32 @@ typedef struct s_struct
 {
 	int		ac;
 	char	**av;
-    char    *envp;
-    int     pipe_fd[2];
-    pid_t   pid_one;
-    pid_t   pid_two;
-    int     infile_fd;
-    int     outfile_fd;
-    
-    
-    
+	char	*envp;
+	int		pipe_fd[2];
+	pid_t	pid_one;
+	pid_t	pid_two;
+	int		infile_fd;
+	int		outfile_fd;
+
 }			t_struct;
 
 // main
 int			main(int ac, char **av, char **envp);
 
 // init
-void init_struct(t_struct *data,int ac, char **av, char **envp);
+void		init_struct(t_struct *data, int ac, char **av, char **envp);
 
-// chiled processing
-void process_child_one(t_struct *data);
-void process_child_two(t_struct *data);
+// child processing
+void		process_child_one(t_struct *data);
+void		process_child_two(t_struct *data);
 
-// exit 
+// path&cmd exec
+void		process_cmd(t_struct *data, char *av_cmd);
+void		check_exec(char **dir, char **cmd, t_struct *data);
+char		*get_path(const char *dir, const char *cmd);
+char		**extract_directories(char **envp, t_struct *data);
+
+// exit
 void		exit_error(char *msg, t_struct *data);
 
 #endif
