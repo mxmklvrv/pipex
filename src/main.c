@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/21 17:06:30 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/21 19:10:22 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,7 @@ int	main(int ac, char **av, char **envp)
 		exit_error(ERR_PIPE, NULL);
 	process_child_one(&data);
 	process_child_two(&data);
-	close(data.pipe_fd[WRITE_TO]);
-	close(data.pipe_fd[READ_FROM]);
+	close_pipe_fds(&data);
 	waitpid(data.pid_one, &status1, 0);
 	waitpid(data.pid_two, &status2, 0);
 	if (WIFEXITED(status2))
@@ -40,8 +39,7 @@ void	process_child_one(t_struct *data)
 	data->pid_one = fork();
 	if (data->pid_one == -1)
 	{
-		close(data->pipe_fd[WRITE_TO]);
-		close(data->pipe_fd[READ_FROM]);
+		close_pipe_fds(data);
 		exit_error(ERR_FORK_1, NULL);
 	}
 	if (data->pid_one == 0)
@@ -49,8 +47,7 @@ void	process_child_one(t_struct *data)
 		data->infile_fd = open(data->av[1], O_RDONLY);
 		if (data->infile_fd < 0)
 		{
-			close(data->pipe_fd[WRITE_TO]);
-			close(data->pipe_fd[READ_FROM]);
+			close_pipe_fds(data);
 			exit_error("infile opening failed", NULL);
 		}
 		close(data->pipe_fd[READ_FROM]);
@@ -67,10 +64,22 @@ void	process_child_one(t_struct *data)
 	}
 }
 
+void	close_pipe_fds(t_struct *data)
+{
+	close(data->pipe_fd[WRITE_TO]);
+	close(data->pipe_fd[READ_FROM]);
+}
+void	free_mem(char **dir, char **cmd)
+{
+	free_sp(dir);
+	free_sp(cmd);
+}
+
 void	process_cmd(t_struct *data, char *av_cmd)
 {
-	char **dir; // needs to free
-	char **cmd; // needs to free
+	char	**dir;
+	char	**cmd;
+
 	dir = NULL;
 	cmd = NULL;
 	dir = extract_directories(data->envp, data); // might be NULL
@@ -79,8 +88,7 @@ void	process_cmd(t_struct *data, char *av_cmd)
 	cmd = ft_split(av_cmd, ' ');
 	if (cmd == NULL || cmd[0] == NULL)
 	{
-		free_sp(dir);
-		free_sp(cmd);
+		free_mem(dir, cmd);
 		exit_error("CMD splitting failed", data);
 	}
 	check_exec(dir, cmd, data);
@@ -94,11 +102,10 @@ void	check_exec(char **dir, char **cmd, t_struct *data)
 	i = 0;
 	while (dir[i])
 	{
-		path = get_path(dir[i], cmd[0]); // might get NULL
+		path = get_path(dir[i], cmd[0]);
 		if (path == NULL)
 		{
-			free_sp(dir);
-			free_sp(cmd);
+			free_mem(dir, cmd);
 			exit_error("Malloc failed in get_path", data);
 		}
 		if (access(path, X_OK) == 0)
@@ -106,16 +113,14 @@ void	check_exec(char **dir, char **cmd, t_struct *data)
 			if (execve(path, cmd, data->envp) == -1)
 			{
 				free(path);
-				free_sp(dir);
-				free_sp(cmd);
+				free_mem(dir, cmd);
 				exit_error("execve failed", data);
 			}
 		}
 		free(path);
 		i++;
 	}
-	free_sp(dir);
-	free_sp(cmd);
+	free_mem(dir, cmd);
 	exit_error("CMD not found", data);
 }
 
@@ -124,6 +129,8 @@ char	*get_path(const char *dir, const char *cmd)
 	char	*tmp;
 	char	*joined_path;
 
+	tmp = NULL;         // do i need it?
+	joined_path = NULL; // do i need it?
 	tmp = ft_strjoin(dir, "/");
 	if (tmp == NULL)
 		return (NULL);
@@ -162,8 +169,7 @@ void	process_child_two(t_struct *data)
 	data->pid_two = fork();
 	if (data->pid_two == -1)
 	{
-		close(data->pipe_fd[WRITE_TO]);
-		close(data->pipe_fd[READ_FROM]);
+		close_pipe_fds(data);
 		exit_error(ERR_FORK_2, NULL);
 	}
 	if (data->pid_two == 0)
@@ -172,8 +178,7 @@ void	process_child_two(t_struct *data)
 				0644);
 		if (data->outfile_fd < 0)
 		{
-			close(data->pipe_fd[WRITE_TO]);
-			close(data->pipe_fd[READ_FROM]);
+			close_pipe_fds(data);
 			exit_error("outfile opening failed", NULL);
 		}
 		close(data->pipe_fd[WRITE_TO]);

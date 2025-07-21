@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 14:13:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/21 16:41:40 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/21 19:02:15 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,9 @@ void		check_exec(char **dir, char **cmd, t_struct *data);
 char		*get_path(const char *dir, const char *cmd);
 char		**extract_directories(char **envp, t_struct *data);
 
-// exit
+// free, close, exit
 void		exit_error(char *msg, t_struct *data);
+void		free_mem(char **dir, char **cmd);
+void		close_pipe_fds(t_struct *data);
 
 #endif
