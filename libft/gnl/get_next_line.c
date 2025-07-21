@@ -6,15 +6,13 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/16 16:48:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/18 14:21:07 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/21 17:34:01 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-static char	*g_leftovers;
-
-char	*ft_get_line(int fd, char *buffer)
+char	*ft_get_line(int fd, char *leftovers, char *buffer)
 {
 	ssize_t	byte_was_read;
 	char	*tmp;
@@ -26,18 +24,21 @@ char	*ft_get_line(int fd, char *buffer)
 		if (byte_was_read <= 0)
 			break ;
 		buffer[byte_was_read] = '\0';
-		if (!g_leftovers)
-			g_leftovers = gnl_ft_strdup("");
-		tmp = g_leftovers;
-		g_leftovers = gnl_ft_strjoin(tmp, buffer);
+		if (!leftovers)
+			leftovers = ft_strdup("");
+		tmp = leftovers;
+		leftovers = ft_strjoin(tmp, buffer);
 		free(tmp);
 		tmp = NULL;
-		if (gnl_ft_strchr(buffer, '\n'))
+		if (ft_strchr(buffer, '\n'))
 			break ;
 	}
 	if (byte_was_read < 0)
-		return (free_and_null());
-	return (g_leftovers);
+	{
+		free(leftovers);
+		return (NULL);
+	}
+	return (leftovers);
 }
 
 char	*ft_save_leftovers(char *full_line)
@@ -45,10 +46,10 @@ char	*ft_save_leftovers(char *full_line)
 	char	*remainings;
 	char	*ptr_nl;
 
-	ptr_nl = gnl_ft_strchr(full_line, '\n');
+	ptr_nl = ft_strchr(full_line, '\n');
 	if (ptr_nl)
 	{
-		remainings = gnl_ft_strdup(ptr_nl + 1);
+		remainings = ft_strdup(ptr_nl + 1);
 		if (!remainings || *remainings == '\0')
 		{
 			free(remainings);
@@ -63,42 +64,22 @@ char	*ft_save_leftovers(char *full_line)
 
 char	*get_next_line(int fd)
 {
-	char	*result;
-	char	*buffer;
+	char		*result;
+	char		*buffer;
+	static char	*leftovers;
 
 	if (BUFFER_SIZE <= 0 || fd < 0)
 		return (NULL);
 	result = NULL;
 	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
-		return (free_and_null());
-	g_leftovers = ft_get_line(fd, buffer);
+		return (free(leftovers), leftovers = NULL, NULL);
+	leftovers = ft_get_line(fd, leftovers, buffer);
 	free(buffer);
 	buffer = NULL;
-	if (!g_leftovers)
-		return (free_and_null());
-	result = g_leftovers;
-	g_leftovers = ft_save_leftovers(result);
+	if (!leftovers)
+		return (free(leftovers), leftovers = NULL, NULL);
+	result = leftovers;
+	leftovers = ft_save_leftovers(result);
 	return (result);
-}
-
-// function to be called from caller
-// to free any leftowers remaining
-void	gnl_clear(void)
-{
-	if (g_leftovers)
-	{
-		free(g_leftovers);
-		g_leftovers = NULL;
-	}
-}
-
-char	*free_and_null(void)
-{
-	if (g_leftovers)
-	{
-		free(g_leftovers);
-		g_leftovers = NULL;
-	}
-	return (NULL);
 }
