@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/20 15:13:57 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/21 13:09:11 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,16 +66,67 @@ void    process_cmd(t_struct *data, char *av_cmd)
     char **cmd; // needs to free
     dir = NULL;
     cmd = NULL;
-    dir = extract_directories(data->envp, data);
+    dir = extract_directories(data->envp, data); // might be NULL 
     cmd = ft_split(av_cmd, ' ');
     if(cmd == NULL)
     {
         free_sp(dir);
         exit_error("CMD splitting failed", data);
     }
-    
+    check_exec(dir, cmd, data);
     
 }
+
+void    check_exec(char **dir, char **cmd, t_struct *data)
+{
+    int i;
+    char *path;
+    
+    i = 0;
+    while(dir[i])
+    {
+        path = get_path(dir[i], cmd[0]); // might get NULL 
+        if (path == NULL)
+        {
+            free_sp(dir);
+            free_sp(cmd);
+            exit_error("Malloc failed in get_path", data);
+        }
+        if (access(path, X_OK) == 0)
+        {
+            if(execve(path,cmd, data->envp) == -1)
+            {
+                free(path);
+                free_sp(dir);
+                free_sp(cmd);
+                exit_error("execve failed", data);
+            }
+            
+        }
+        free(path);
+        i++;
+    }
+    free_sp(dir);
+    free_sp(cmd);
+    exit_error("CMD not found", data);
+}
+
+char *get_path(const char *dir, const char *cmd)
+{
+    char *tmp;
+    char *joined_path;
+    
+    tmp = ft_strjoin(dir, "/");
+    if (tmp == NULL)
+        return (NULL);
+    joined_path = ft_strjoin(tmp, cmd);
+    free(tmp);
+    if (joined_path == NULL)
+        return (NULL);
+    return (joined_path);
+}
+
+
 
 char **extract_directories(char **envp, t_struct *data)
 {
@@ -129,10 +180,9 @@ void process_child_two(t_struct *data)
         } 
         close(data->outfile_fd);
         close(data->pipe_fd[READ_FROM]);
-        process_cmd(data, data->av[4]);
+        process_cmd(data, data->av[3]);
     }
 }
-
 
 
 void init_struct(t_struct *data,int ac, char **av, char **envp)
