@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/22 17:56:46 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/22 19:20:11 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,10 @@ void	process_cmd(t_struct *data, char *av_cmd)
 	if (dir == NULL)
 		exit_error("split failed", NULL, NULL, gen_err);
 	cmd = ft_split(av_cmd, ' ');
-	if (cmd == NULL || cmd[0] == NULL)
+	if (cmd == NULL)
 		exit_error("CMD splitting failed", dir, cmd, gen_err);
+	if (cmd[0] == NULL)
+		exit_error("CMD not found", dir, cmd, cmd_not_found);
 	check_abs_rel(dir, cmd, data);
 	check_exec(dir, cmd, data);
 }
@@ -129,7 +131,6 @@ void	check_abs_rel(char **dir, char **cmd, t_struct *data)
 	}
 }
 
-// check this, does not work
 void	check_exec(char **dir, char **cmd, t_struct *data)
 {
 	int		i;
