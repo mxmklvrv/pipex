@@ -6,19 +6,24 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 14:13:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/22 13:43:54 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/22 15:50:43 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-# include "libft.h"
+# include "../libft/libft.h"
 # include <fcntl.h>
+# include <stdio.h>
 # include <stdlib.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
+
+# define cmd_not_found 127
+# define cmd_not_exec 126 
+# define gen_err 1
 
 
 // pipe in and out
@@ -53,11 +58,11 @@ void		process_cmd(t_struct *data, char *av_cmd);
 void		check_exec(char **dir, char **cmd, t_struct *data);
 char		*get_path(const char *dir, const char *cmd);
 char		**extract_directories(char **envp, t_struct *data);
-void redirect_fds(int in_fd, int out_fd, t_struct *data);
-void    check_abs_rel(char **dir, char **cmd, t_struct *data); 
+void		redirect_fds(int in_fd, int out_fd, t_struct *data);
+void		check_abs_rel(char **dir, char **cmd, t_struct *data);
 
 // free, close, exit
-void	exit_error(char *msg, char **dir, char **cmd);
+void		exit_error(char *msg, char **dir, char **cmd);
 void		free_mem(char **dir, char **cmd);
 void		close_pipe_fds(t_struct *data);
 
