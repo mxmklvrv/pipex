@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/22 16:29:44 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/22 17:56:46 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,18 +141,12 @@ void	check_exec(char **dir, char **cmd, t_struct *data)
 		path = get_path(dir[i], cmd[0]);
 		if (path == NULL)
 			exit_error("Malloc failed in get_path", dir, cmd, gen_err);
-		if (access(path, F_OK) == 0)
+		if (access(path, X_OK) == 0)
 		{
-			if (access(path, X_OK) != 0)
-			{
-				free(path);
-				exit_error("CMD found but not executable", dir, cmd,
-					cmd_not_exec);
-			}
 			if (execve(path, cmd, data->envp) == -1)
 			{
 				free(path);
-				exit_error("execve failed", dir, cmd, gen_err);
+				exit_error("CMD not executable", dir, cmd, cmd_not_exec);
 			}
 		}
 		free(path);
