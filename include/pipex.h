@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 14:13:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/22 17:00:11 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/23 14:29:00 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
-# define cmd_not_found 127
-# define cmd_not_exec 126 
-# define gen_err 1
+# define CMD_NOT_FOUND 127
+# define CMD_NOT_EXEC 126 
+# define GEN_ERROR 1
 
 
 // pipe in and out
