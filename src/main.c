@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/23 16:30:01 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/23 16:57:21 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,11 +147,11 @@ void	check_abs_rel(char **dir, char **cmd, t_struct *data)
 	if (cmd[0][0] == '/' || ft_strncmp(cmd[0], "./", 2) == 0)
 	{
 		if (access(cmd[0], F_OK) != 0)
-			exit_error("Command not found", NULL, cmd, CMD_NOT_FOUND);
+			exit_error("Command not found", dir, cmd, CMD_NOT_FOUND);
 		if (access(cmd[0], X_OK) != 0)
-			exit_error("CMD not executable", NULL, cmd, CMD_NOT_EXEC);
+			exit_error("CMD not executable", dir, cmd, CMD_NOT_EXEC);
 		if (execve(cmd[0], cmd, data->envp) == -1)
-			exit_error("execve failed", dir, cmd, GEN_ERROR);
+			exit_error("execve failed", dir, cmd, CMD_NOT_EXEC);
 	}
 }
 
