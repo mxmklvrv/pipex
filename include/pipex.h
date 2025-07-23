@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 14:13:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/23 14:29:00 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/23 16:19:46 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,8 @@
 # include <unistd.h>
 
 # define CMD_NOT_FOUND 127
-# define CMD_NOT_EXEC 126 
+# define CMD_NOT_EXEC 126
 # define GEN_ERROR 1
-
 
 // pipe in and out
 # define WRITE_TO 1
@@ -57,7 +56,7 @@ void		process_child_two(t_struct *data);
 void		process_cmd(t_struct *data, char *av_cmd);
 void		check_exec(char **dir, char **cmd, t_struct *data);
 char		*get_path(const char *dir, const char *cmd);
-char		**extract_directories(char **envp, t_struct *data);
+char		**extract_directories(char **envp, t_struct *data, char **cmd);
 void		redirect_fds(int in_fd, int out_fd, t_struct *data);
 void		check_abs_rel(char **dir, char **cmd, t_struct *data);
 

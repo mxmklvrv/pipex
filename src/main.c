@@ -6,13 +6,12 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/23 14:28:59 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/23 16:30:01 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-// what if no envp
 // input parsing ?
 
 int	main(int ac, char **av, char **envp)
@@ -82,7 +81,6 @@ void	process_child_two(t_struct *data)
 	}
 }
 
-
 void	redirect_fds(int in_fd, int out_fd, t_struct *data)
 {
 	if (dup2(in_fd, STDIN_FILENO) == -1)
@@ -101,7 +99,6 @@ void	redirect_fds(int in_fd, int out_fd, t_struct *data)
 	close(out_fd);
 }
 
-
 void	process_cmd(t_struct *data, char *av_cmd)
 {
 	char	**dir;
@@ -111,19 +108,15 @@ void	process_cmd(t_struct *data, char *av_cmd)
 	cmd = NULL;
 	cmd = ft_split(av_cmd, ' ');
 	if (cmd == NULL)
-		exit_error("CMD splitting failed", NULL, NULL, GEN_ERROR);
+		exit_error("CMD splitting failed", dir, cmd, GEN_ERROR);
 	if (cmd[0] == NULL)
-		exit_error("Command not found", NULL, NULL, CMD_NOT_FOUND);
-    if (data->envp == NULL || data->envp[0] == NULL)
-        check_abs_rel(NULL, cmd, data); // check this 
-    dir = extract_directories(data->envp, data);
-	if (dir == NULL)
-		exit_error("Split failed", NULL, cmd, GEN_ERROR);
-	check_abs_rel(dir, cmd, data);
+		exit_error("Command not found", dir, cmd, CMD_NOT_FOUND);
+	check_abs_rel(NULL, cmd, data);
+	dir = extract_directories(data->envp, data, cmd);
 	check_exec(dir, cmd, data);
 }
-// envp below might be null
-char	**extract_directories(char **envp, t_struct *data)
+
+char	**extract_directories(char **envp, t_struct *data, char **cmd)
 {
 	int		i;
 	char	*path;
@@ -132,17 +125,20 @@ char	**extract_directories(char **envp, t_struct *data)
 	i = 0;
 	path = NULL;
 	dir = NULL;
-	while (envp[i])
+	if (envp)
 	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-			path = envp[i] + 5;
-		i++;
+		while (envp[i])
+		{
+			if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+				path = envp[i] + 5;
+			i++;
+		}
 	}
 	if (path == NULL)
-		exit_error("Path not found in environment", NULL , NULL, GEN_ERROR);
+		exit_error("Path not found in environment", NULL, cmd, GEN_ERROR);
 	dir = ft_split(path, ':');
 	if (dir == NULL)
-		exit_error("Path splitting failed", NULL, NULL, GEN_ERROR);
+		exit_error("Path splitting failed", NULL, cmd, GEN_ERROR);
 	return (dir);
 }
 
@@ -199,7 +195,6 @@ char	*get_path(const char *dir, const char *cmd)
 	return (joined_path);
 }
 
-
 void	close_pipe_fds(t_struct *data)
 {
 	close(data->pipe_fd[WRITE_TO]);
@@ -215,13 +210,12 @@ void	free_mem(char **dir, char **cmd)
 void	exit_error(char *msg, char **dir, char **cmd, int exit_code)
 {
 	free_mem(dir, cmd);
-    if (exit_code == GEN_ERROR || exit_code == CMD_NOT_EXEC)
-        perror(msg);
-    else
-	    ft_putendl_fd(msg, STDERR_FILENO);
+	if (exit_code == GEN_ERROR || exit_code == CMD_NOT_EXEC)
+		perror(msg);
+	else
+		ft_putendl_fd(msg, STDERR_FILENO);
 	exit(exit_code);
 }
-
 
 void	init_struct(t_struct *data, int ac, char **av, char **envp)
 {
