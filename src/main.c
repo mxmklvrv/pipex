@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/23 16:57:21 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/23 19:11:43 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ int	main(int ac, char **av, char **envp)
 	int			status2;
 
 	if (ac != 5)
-		exit_error("Incorrect number of arguments.", NULL, NULL, GEN_ERROR);
+		exit_error("Incorrect number of arguments", NULL, NULL, GEN_ERROR);
 	init_struct(&data, ac, av, envp);
 	if (pipe(data.pipe_fd) == -1)
-		exit_error("Pipe() failed.", NULL, NULL, GEN_ERROR);
+		exit_error("Pipe() failed", NULL, NULL, GEN_ERROR);
 	process_child_one(&data);
 	process_child_two(&data);
 	close_pipe_fds(&data);
@@ -34,6 +34,13 @@ int	main(int ac, char **av, char **envp)
 		exit(WEXITSTATUS(status2));
 	else
 		exit(EXIT_FAILURE);
+}
+
+void	init_struct(t_struct *data, int ac, char **av, char **envp)
+{
+	data->ac = ac;
+	data->av = av;
+	data->envp = envp;
 }
 
 void	process_child_one(t_struct *data)
@@ -97,129 +104,4 @@ void	redirect_fds(int in_fd, int out_fd, t_struct *data)
 	}
 	close(in_fd);
 	close(out_fd);
-}
-
-void	process_cmd(t_struct *data, char *av_cmd)
-{
-	char	**dir;
-	char	**cmd;
-
-	dir = NULL;
-	cmd = NULL;
-	cmd = ft_split(av_cmd, ' ');
-	if (cmd == NULL)
-		exit_error("CMD splitting failed", dir, cmd, GEN_ERROR);
-	if (cmd[0] == NULL)
-		exit_error("Command not found", dir, cmd, CMD_NOT_FOUND);
-	check_abs_rel(NULL, cmd, data);
-	dir = extract_directories(data->envp, data, cmd);
-	check_exec(dir, cmd, data);
-}
-
-char	**extract_directories(char **envp, t_struct *data, char **cmd)
-{
-	int		i;
-	char	*path;
-	char	**dir;
-
-	i = 0;
-	path = NULL;
-	dir = NULL;
-	if (envp)
-	{
-		while (envp[i])
-		{
-			if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-				path = envp[i] + 5;
-			i++;
-		}
-	}
-	if (path == NULL)
-		exit_error("Path not found in environment", NULL, cmd, GEN_ERROR);
-	dir = ft_split(path, ':');
-	if (dir == NULL)
-		exit_error("Path splitting failed", NULL, cmd, GEN_ERROR);
-	return (dir);
-}
-
-void	check_abs_rel(char **dir, char **cmd, t_struct *data)
-{
-	if (cmd[0][0] == '/' || ft_strncmp(cmd[0], "./", 2) == 0)
-	{
-		if (access(cmd[0], F_OK) != 0)
-			exit_error("Command not found", dir, cmd, CMD_NOT_FOUND);
-		if (access(cmd[0], X_OK) != 0)
-			exit_error("CMD not executable", dir, cmd, CMD_NOT_EXEC);
-		if (execve(cmd[0], cmd, data->envp) == -1)
-			exit_error("execve failed", dir, cmd, CMD_NOT_EXEC);
-	}
-}
-
-void	check_exec(char **dir, char **cmd, t_struct *data)
-{
-	int		i;
-	char	*path;
-
-	i = 0;
-	while (dir[i])
-	{
-		path = get_path(dir[i], cmd[0]);
-		if (path == NULL)
-			exit_error("Malloc failed in get_path", dir, cmd, GEN_ERROR);
-		if (access(path, X_OK) == 0)
-		{
-			if (execve(path, cmd, data->envp) == -1)
-			{
-				free(path);
-				exit_error("CMD not executable", dir, cmd, CMD_NOT_EXEC);
-			}
-		}
-		free(path);
-		i++;
-	}
-	exit_error("Command not found", dir, cmd, CMD_NOT_FOUND);
-}
-
-char	*get_path(const char *dir, const char *cmd)
-{
-	char	*tmp;
-	char	*joined_path;
-
-	tmp = ft_strjoin(dir, "/");
-	if (tmp == NULL)
-		return (NULL);
-	joined_path = ft_strjoin(tmp, cmd);
-	free(tmp);
-	if (joined_path == NULL)
-		return (NULL);
-	return (joined_path);
-}
-
-void	close_pipe_fds(t_struct *data)
-{
-	close(data->pipe_fd[WRITE_TO]);
-	close(data->pipe_fd[READ_FROM]);
-}
-void	free_mem(char **dir, char **cmd)
-{
-	if (dir)
-		free_sp(dir);
-	if (cmd)
-		free_sp(cmd);
-}
-void	exit_error(char *msg, char **dir, char **cmd, int exit_code)
-{
-	free_mem(dir, cmd);
-	if (exit_code == GEN_ERROR || exit_code == CMD_NOT_EXEC)
-		perror(msg);
-	else
-		ft_putendl_fd(msg, STDERR_FILENO);
-	exit(exit_code);
-}
-
-void	init_struct(t_struct *data, int ac, char **av, char **envp)
-{
-	data->ac = ac;
-	data->av = av;
-	data->envp = envp;
 }

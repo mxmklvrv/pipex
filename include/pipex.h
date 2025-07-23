@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 14:13:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/23 16:19:46 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/23 19:08:59 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void		redirect_fds(int in_fd, int out_fd, t_struct *data);
 void		check_abs_rel(char **dir, char **cmd, t_struct *data);
 
 // free, close, exit
-void		exit_error(char *msg, char **dir, char **cmd, int);
+void		exit_error(char *msg, char **dir, char **cmd, int exit_code);
 void		free_mem(char **dir, char **cmd);
 void		close_pipe_fds(t_struct *data);
 

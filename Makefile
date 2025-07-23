@@ -6,7 +6,7 @@
 #    By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/18 14:24:11 by mklevero          #+#    #+#              #
-#    Updated: 2025/07/21 17:02:45 by mklevero         ###   ########.fr        #
+#    Updated: 2025/07/23 19:08:02 by mklevero         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ SRC_DIR = src/
 
 HEADERS = -I ./include  -I $(LIBFT_DIR)
 
-SRCS = main.c
+SRCS = main.c dirs_and_cmds.c close_and_exit.c
 
 OBJ = $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
 .SECONDARY: ${OBJS}
