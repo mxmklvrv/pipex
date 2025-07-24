@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 19:03:24 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/23 19:06:24 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/24 15:43:58 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	process_cmd(t_struct *data, char *av_cmd)
 	if (cmd[0] == NULL)
 		exit_error("Command not found", dir, cmd, CMD_NOT_FOUND);
 	check_abs_rel(NULL, cmd, data);
-	dir = extract_directories(data->envp, data, cmd);
+	dir = extract_directories(data->envp, cmd);
 	check_exec(dir, cmd, data);
 }
 
@@ -42,7 +42,7 @@ void	check_abs_rel(char **dir, char **cmd, t_struct *data)
 	}
 }
 
-char	**extract_directories(char **envp, t_struct *data, char **cmd)
+char	**extract_directories(char **envp, char **cmd)
 {
 	int		i;
 	char	*path;

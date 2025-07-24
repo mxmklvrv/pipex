@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/24 13:46:39 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/24 15:42:44 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ int	main(int ac, char **av, char **envp)
 	int			status2;
 
 	if (ac != 5)
-    {
-        ft_putendl_fd("Usage: ./pipex file1 cmd1 cmd2 file2", STDERR_FILENO);
-        exit(EXIT_FAILURE);
-    }
+	{
+		ft_putendl_fd("Usage: ./pipex file1 cmd1 cmd2 file2", STDERR_FILENO);
+		exit(EXIT_FAILURE);
+	}
 	init_struct(&data, ac, av, envp);
 	if (pipe(data.pipe_fd) == -1)
 		exit_error("Pipe() failed", NULL, NULL, GEN_ERROR);
@@ -63,7 +63,7 @@ void	process_child_one(t_struct *data)
 			exit_error("Infile opening failed.", NULL, NULL, GEN_ERROR);
 		}
 		close(data->pipe_fd[READ_FROM]);
-		redirect_fds(data->infile_fd, data->pipe_fd[WRITE_TO], data);
+		redirect_fds(data->infile_fd, data->pipe_fd[WRITE_TO]);
 		process_cmd(data, data->av[2]);
 	}
 }
@@ -86,12 +86,12 @@ void	process_child_two(t_struct *data)
 			exit_error("Outfile opening failed", NULL, NULL, GEN_ERROR);
 		}
 		close(data->pipe_fd[WRITE_TO]);
-		redirect_fds(data->pipe_fd[READ_FROM], data->outfile_fd, data);
+		redirect_fds(data->pipe_fd[READ_FROM], data->outfile_fd);
 		process_cmd(data, data->av[3]);
 	}
 }
 
-void	redirect_fds(int in_fd, int out_fd, t_struct *data)
+void	redirect_fds(int in_fd, int out_fd)
 {
 	if (dup2(in_fd, STDIN_FILENO) == -1)
 	{
