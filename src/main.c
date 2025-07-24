@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/23 19:11:43 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/24 13:46:39 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,10 @@ int	main(int ac, char **av, char **envp)
 	int			status2;
 
 	if (ac != 5)
-		exit_error("Incorrect number of arguments", NULL, NULL, GEN_ERROR);
+    {
+        ft_putendl_fd("Usage: ./pipex file1 cmd1 cmd2 file2", STDERR_FILENO);
+        exit(EXIT_FAILURE);
+    }
 	init_struct(&data, ac, av, envp);
 	if (pipe(data.pipe_fd) == -1)
 		exit_error("Pipe() failed", NULL, NULL, GEN_ERROR);
