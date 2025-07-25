@@ -6,13 +6,11 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/25 13:39:22 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/25 18:42:34 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-// input parsing ?
 
 int	main(int ac, char **av, char **envp)
 {
@@ -24,16 +22,15 @@ int	main(int ac, char **av, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	data.ac = ac;
-    data.av = av;
-    data.envp = envp;
+	data.av = av;
+	data.envp = envp;
 	if (pipe(data.pipe_fd) == -1)
 		exit_error("Pipe() failed", NULL, NULL, GEN_ERROR);
 	process_child_one(&data);
 	process_child_two(&data);
 	close_pipe_fds(&data);
-    wait_end(&data);
+	wait_end(&data);
 }
-
 
 void	process_child_one(t_struct *data)
 {

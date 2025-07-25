@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 19:05:34 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/25 13:29:12 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/25 19:14:56 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,42 +25,31 @@ void	free_mem(char **dir, char **cmd)
 	if (cmd)
 		free_sp(cmd);
 }
-/*
-void	exit_error(char *msg, char **dir, char **cmd, int exit_code)
+
+void	exit_perror(char **dir, char **cmd, int exit_code)
 {
-	free_mem(dir, cmd);
 	ft_putstr_fd("pipex: ", STDERR_FILENO);
-	if (exit_code == GEN_ERROR || exit_code == CMD_NOT_EXEC)
-		perror(msg);
-	else
-		ft_putendl_fd(msg, STDERR_FILENO);
+	if (cmd && cmd[0])
+	{
+		ft_putstr_fd(cmd[0], STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+	}
+	perror(NULL);
+	free_mem(dir, cmd);
 	exit(exit_code);
 }
-*/
-void    exit_perror(char **dir, char **cmd, int exit_code)
-{
-    free_mem(dir, cmd);
-	ft_putstr_fd("pipex: ", STDERR_FILENO);
-    if(cmd && cmd[0])
-    {
-        ft_putstr_fd(cmd[0], STDERR_FILENO);
-        ft_putstr_fd(": ", STDERR_FILENO);
-    }
-    perror(NULL);
-    exit(exit_code);
-}
 
-void    exit_error(char *msg, char **dir, char **cmd, int exit_code)
+void	exit_error(char *msg, char **dir, char **cmd, int exit_code)
 {
-    free_mem(dir, cmd);
 	ft_putstr_fd("pipex: ", STDERR_FILENO);
-    if(cmd && cmd[0])
-    {
-        ft_putstr_fd(cmd[0], STDERR_FILENO);
-        ft_putstr_fd(": ", STDERR_FILENO);
-    }
-    ft_putendl_fd(msg, STDERR_FILENO);
-    exit(exit_code);
+	if (cmd && cmd[0])
+	{
+		ft_putstr_fd(cmd[0], STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+	}
+	ft_putendl_fd(msg, STDERR_FILENO);
+	free_mem(dir, cmd);
+	exit(exit_code);
 }
 
 void	wait_end(t_struct *data)
