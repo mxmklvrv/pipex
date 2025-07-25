@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 14:13:33 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/24 19:36:32 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/25 13:40:58 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,6 @@ typedef struct s_struct
 // main
 int			main(int ac, char **av, char **envp);
 
-// init
-void		init_struct(t_struct *data, int ac, char **av, char **envp);
 
 // child processing
 void		process_child_one(t_struct *data);
@@ -62,6 +60,7 @@ void		check_abs_rel(char **dir, char **cmd, t_struct *data);
 
 // free, close, exit
 void		exit_error(char *msg, char **dir, char **cmd, int exit_code);
+void    exit_perror(char **dir, char **cmd, int exit_code);
 void		free_mem(char **dir, char **cmd);
 void		close_pipe_fds(t_struct *data);
 void		wait_end(t_struct *data);
