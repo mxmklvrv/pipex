@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/24 15:42:44 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/25 13:39:22 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,34 +17,23 @@
 int	main(int ac, char **av, char **envp)
 {
 	t_struct	data;
-	int			status1;
-	int			status2;
 
 	if (ac != 5)
 	{
 		ft_putendl_fd("Usage: ./pipex file1 cmd1 cmd2 file2", STDERR_FILENO);
 		exit(EXIT_FAILURE);
 	}
-	init_struct(&data, ac, av, envp);
+	data.ac = ac;
+    data.av = av;
+    data.envp = envp;
 	if (pipe(data.pipe_fd) == -1)
 		exit_error("Pipe() failed", NULL, NULL, GEN_ERROR);
 	process_child_one(&data);
 	process_child_two(&data);
 	close_pipe_fds(&data);
-	waitpid(data.pid_one, &status1, 0);
-	waitpid(data.pid_two, &status2, 0);
-	if (WIFEXITED(status2))
-		exit(WEXITSTATUS(status2));
-	else
-		exit(EXIT_FAILURE);
+    wait_end(&data);
 }
 
-void	init_struct(t_struct *data, int ac, char **av, char **envp)
-{
-	data->ac = ac;
-	data->av = av;
-	data->envp = envp;
-}
 
 void	process_child_one(t_struct *data)
 {
@@ -52,7 +41,7 @@ void	process_child_one(t_struct *data)
 	if (data->pid_one == -1)
 	{
 		close_pipe_fds(data);
-		exit_error("Fork one failed.", NULL, NULL, GEN_ERROR);
+		exit_perror(NULL, NULL, GEN_ERROR);
 	}
 	if (data->pid_one == 0)
 	{
@@ -60,7 +49,7 @@ void	process_child_one(t_struct *data)
 		if (data->infile_fd < 0)
 		{
 			close_pipe_fds(data);
-			exit_error("Infile opening failed.", NULL, NULL, GEN_ERROR);
+			exit_perror(NULL, NULL, GEN_ERROR);
 		}
 		close(data->pipe_fd[READ_FROM]);
 		redirect_fds(data->infile_fd, data->pipe_fd[WRITE_TO]);
@@ -74,7 +63,7 @@ void	process_child_two(t_struct *data)
 	if (data->pid_two == -1)
 	{
 		close_pipe_fds(data);
-		exit_error("Fork two failed.", NULL, NULL, GEN_ERROR);
+		exit_perror(NULL, NULL, GEN_ERROR);
 	}
 	if (data->pid_two == 0)
 	{
@@ -83,7 +72,7 @@ void	process_child_two(t_struct *data)
 		if (data->outfile_fd < 0)
 		{
 			close_pipe_fds(data);
-			exit_error("Outfile opening failed", NULL, NULL, GEN_ERROR);
+			exit_perror(NULL, NULL, GEN_ERROR);
 		}
 		close(data->pipe_fd[WRITE_TO]);
 		redirect_fds(data->pipe_fd[READ_FROM], data->outfile_fd);
@@ -97,13 +86,13 @@ void	redirect_fds(int in_fd, int out_fd)
 	{
 		close(in_fd);
 		close(out_fd);
-		exit_error("dup2 failed (stdin)", NULL, NULL, GEN_ERROR);
+		exit_perror(NULL, NULL, GEN_ERROR);
 	}
 	if (dup2(out_fd, STDOUT_FILENO) == -1)
 	{
 		close(in_fd);
 		close(out_fd);
-		exit_error("dup2 failed (stdout)", NULL, NULL, GEN_ERROR);
+		exit_perror(NULL, NULL, GEN_ERROR);
 	}
 	close(in_fd);
 	close(out_fd);
