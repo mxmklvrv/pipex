@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 19:05:34 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/25 19:14:56 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/26 12:35:33 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	free_mem(char **dir, char **cmd)
 	if (cmd)
 		free_sp(cmd);
 }
-
+/*
 void	exit_perror(char **dir, char **cmd, int exit_code)
 {
 	ft_putstr_fd("pipex: ", STDERR_FILENO);
@@ -51,6 +51,78 @@ void	exit_error(char *msg, char **dir, char **cmd, int exit_code)
 	free_mem(dir, cmd);
 	exit(exit_code);
 }
+*/
+
+void	exit_error(char *msg, char **dir, char **cmd, int exit_code)
+{
+    char    *prefix;
+    char    *error_msg;
+    char    *command;
+    
+    command = NULL; 
+	if (cmd && cmd[0])
+        command = cmd[0];
+    prefix = error_prefix(command);
+    if(prefix == NULL)
+    {
+        free_mem(dir, cmd);
+        exit(EXIT_FAILURE);
+    }
+    error_msg = ft_strjoin(prefix, msg);
+    free(prefix);
+    if(error_msg == NULL)
+    {
+        free_mem(dir, cmd);
+        exit(EXIT_FAILURE);
+    }
+	ft_putendl_fd(error_msg, STDERR_FILENO);
+    free(error_msg);
+	free_mem(dir, cmd);
+	exit(exit_code);
+}
+void	exit_perror(char **dir, char **cmd, int exit_code)
+{
+    char    *prefix;
+    char    *command;
+    
+    command = NULL;
+	if (cmd && cmd[0])
+        command = cmd[0];
+    prefix = error_prefix(command);
+    if(prefix == NULL)
+    {
+        free_mem(dir, cmd);
+        exit(EXIT_FAILURE);
+    }
+    ft_putstr_fd(prefix, STDERR_FILENO);
+    free(prefix);
+    perror(NULL);
+	free_mem(dir, cmd);
+	exit(exit_code);
+}
+
+char *error_prefix(const char *cmd)
+{
+    char *prefix;
+    char *tmp;
+    
+    prefix = ft_strdup("pipex: ");
+    if(prefix == NULL)
+        return (NULL);
+    if (cmd)
+    {
+        tmp = ft_strjoin(prefix, cmd);
+        free(prefix);
+        if(tmp == NULL)
+            return (NULL);
+        prefix = ft_strjoin(tmp, ": ");
+        free(tmp);
+        if (prefix == NULL)
+            return (NULL);
+    }
+    return (prefix);
+}
+
 
 void	wait_end(t_struct *data)
 {
