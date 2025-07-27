@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 15:28:06 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/25 18:42:34 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/27 18:55:30 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	main(int ac, char **av, char **envp)
 	data.av = av;
 	data.envp = envp;
 	if (pipe(data.pipe_fd) == -1)
-		exit_error("Pipe() failed", NULL, NULL, GEN_ERROR);
+		exit_error("Pipe() failed\n", NULL, NULL, GEN_ERROR);
 	process_child_one(&data);
 	process_child_two(&data);
 	close_pipe_fds(&data);
@@ -93,4 +93,10 @@ void	redirect_fds(int in_fd, int out_fd)
 	}
 	close(in_fd);
 	close(out_fd);
+}
+
+void	close_pipe_fds(t_struct *data)
+{
+	close(data->pipe_fd[WRITE_TO]);
+	close(data->pipe_fd[READ_FROM]);
 }

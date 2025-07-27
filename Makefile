@@ -6,12 +6,12 @@
 #    By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/18 14:24:11 by mklevero          #+#    #+#              #
-#    Updated: 2025/07/24 14:19:50 by mklevero         ###   ########.fr        #
+#    Updated: 2025/07/27 18:55:27 by mklevero         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
-CC = cc -g 
+CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
 LIBFT_DIR = ./libft
@@ -23,7 +23,7 @@ SRC_DIR = src/
 
 HEADERS = -I ./include  -I $(LIBFT_DIR)
 
-SRCS = main.c dirs_and_cmds.c close_and_exit.c
+SRCS = main.c dirs_and_cmds.c error_and_exit.c
 
 OBJ = $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
 .SECONDARY: ${OBJS}

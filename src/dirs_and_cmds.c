@@ -6,7 +6,7 @@
 /*   By: mklevero <mklevero@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 19:03:24 by mklevero          #+#    #+#             */
-/*   Updated: 2025/07/25 13:37:11 by mklevero         ###   ########.fr       */
+/*   Updated: 2025/07/27 18:52:32 by mklevero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ void	process_cmd(t_struct *data, char *av_cmd)
 	cmd = NULL;
 	cmd = ft_split(av_cmd, ' ');
 	if (cmd == NULL)
-		exit_error("CMD splitting failed", dir, cmd, GEN_ERROR);
+		exit_error("command splitting failed\n", dir, cmd, GEN_ERROR);
 	if (cmd[0] == NULL)
-		exit_error("command not found", dir, cmd, CMD_NOT_FOUND);
+		exit_error(": command not found\n", dir, cmd, CMD_NOT_FOUND);
 	check_abs_rel(NULL, cmd, data);
 	dir = extract_directories(data->envp, cmd);
 	check_exec(dir, cmd, data);
@@ -61,10 +61,10 @@ char	**extract_directories(char **envp, char **cmd)
 		}
 	}
 	if (path == NULL)
-		exit_error("No such file or directory", NULL, cmd, CMD_NOT_FOUND);
+		exit_error("No such file or directory\n", NULL, cmd, CMD_NOT_FOUND);
 	dir = ft_split(path, ':');
 	if (dir == NULL)
-		exit_error("Path splitting failed", NULL, cmd, GEN_ERROR);
+		exit_error("Path splitting failed\n", NULL, cmd, GEN_ERROR);
 	return (dir);
 }
 
@@ -78,7 +78,7 @@ void	check_exec(char **dir, char **cmd, t_struct *data)
 	{
 		path = get_path(dir[i], cmd[0]);
 		if (path == NULL)
-			exit_error("Malloc failed in get_path", dir, cmd, GEN_ERROR);
+			exit_error("Malloc failed in get_path\n", dir, cmd, GEN_ERROR);
 		if (access(path, F_OK) == 0)
 		{
 			if (access(path, X_OK) != 0)
@@ -93,7 +93,7 @@ void	check_exec(char **dir, char **cmd, t_struct *data)
 		free(path);
 		i++;
 	}
-	exit_error("command not found", dir, cmd, CMD_NOT_FOUND);
+	exit_error("command not found\n", dir, cmd, CMD_NOT_FOUND);
 }
 
 char	*get_path(const char *dir, const char *cmd)
